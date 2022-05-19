@@ -2,6 +2,7 @@ package rechnungsGeneratorMomo;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -11,7 +12,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class PdfCreator {
 
-	public  void createPdf(Kunde kunde) throws IOException {
+	public  void createPdf(Kunde kunde, ArrayList<Angebotspositionen>positionen) throws IOException {
 		
 		PDDocument document = new PDDocument();
 		PDPage page1 = new PDPage(PDRectangle.A4);
@@ -26,7 +27,7 @@ public class PdfCreator {
 		createadress(cos, kunde);
 		addStartText(cos,kunde);
 		drawRectangle(cos);
-		addOfferCredentials(cos,kunde);
+		addOfferCredentials(cos,kunde, positionen);
 		addlastText(cos);
 		footer(cos);
 		cos.close();
@@ -121,11 +122,11 @@ public class PdfCreator {
 		contentStream.showText("Leistung");
 		contentStream.endText();
 
-		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, PdfHelper.RECT_START_Y_TEXT);
-		contentStream.showText("Menge");
-		contentStream.endText();
+//		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
+//		contentStream.beginText();
+//		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, PdfHelper.RECT_START_Y_TEXT);
+//		contentStream.showText("Pos.");
+//		contentStream.endText();
 
 		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 		contentStream.beginText();
@@ -143,53 +144,76 @@ public class PdfCreator {
 
 	}
 	
-	 void addOfferCredentials(PDPageContentStream contentStream, Kunde kunde) throws IOException {
+	 void addOfferCredentials(PDPageContentStream contentStream, Kunde kunde, ArrayList<Angebotspositionen>positionen) throws IOException {
 		int pixelPosition_Y = PdfHelper.RECT_START_Y_TEXT - 20;
-		
-		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
-		contentStream.showText(kunde.getLeistungsBeschreibung().replace("\n", "").replace("\r", ""));
-		contentStream.endText();
-		
-		
+		int gesamtPreis=0;
+		int posNr=0;
+		for (Angebotspositionen i : positionen) {
+			posNr++;
+			gesamtPreis=gesamtPreis +Integer.valueOf(i.getBetrag());
+//			contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
+//			contentStream.beginText();
+//			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, pixelPosition_Y);
+//			contentStream.showText(String.valueOf(posNr));
+//			contentStream.endText();
 
-	
-		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, pixelPosition_Y);
-		contentStream.showText("1");
-		contentStream.endText();
-
-	
-		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_EINZELPREIS, pixelPosition_Y);
-		contentStream.showText(String.valueOf(kunde.getBetrag())+" EUR");
-		contentStream.endText();
-
-	
-		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_GESAMTPREIS, pixelPosition_Y);
-		contentStream.showText(String.valueOf(kunde.getBetrag()) + " EUR");
-		contentStream.endText();
-		
-		if(kunde.getLeistungsBeschreibung1()!=null) {
 			contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 			contentStream.beginText();
-			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 20);
-			contentStream.showText(kunde.getLeistungsBeschreibung1().replace("\n", "").replace("\r", ""));
+			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_EINZELPREIS, pixelPosition_Y);
+			contentStream.showText(String.valueOf(i.getBetrag()) + ",00 EUR");
 			contentStream.endText();
-		}
-		
-		if(kunde.getLeistungsBeschreibung2()!=null) {
 			contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 			contentStream.beginText();
-			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 40);
-			contentStream.showText(kunde.getLeistungsBeschreibung2().replace("\n", "").replace("\r", ""));
+			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_GESAMTPREIS, pixelPosition_Y);
+			contentStream.showText(String.valueOf(i.getBetrag()) + ",00 EUR");
 			contentStream.endText();
+			
+					for (String beschreibung : i.getBeschreibungen()) {
+						
+					if(!beschreibung.isBlank()) {
+						contentStream.beginText();
+						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
+						contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
+						contentStream.endText();
+					}
+//						contentStream.beginText();
+//						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
+//						contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
+//						contentStream.endText();					
+//				
+//						
+//					
+//							contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
+//							contentStream.beginText();
+//							contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 20);
+//							contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
+//							contentStream.endText();
+//						
+//						
+//					
+//							contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
+//							contentStream.beginText();
+//							contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 40);
+//							contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
+//							contentStream.endText();
+						pixelPosition_Y-=15;
+						
+					}
+					
+			pixelPosition_Y -=10;
 		}
-
+		
+		contentStream.setFont(PdfHelper.FONT_DEFAULT_BOLD, PdfHelper.FONT_SIZE_DEFAULT);
+		contentStream.beginText();
+		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, pixelPosition_Y-30);
+		contentStream.showText("Gesamtsumme:");		
+		contentStream.endText();
+		
+		
+		contentStream.beginText();
+		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_GESAMTPREIS, pixelPosition_Y-30);
+		contentStream.showText(String.valueOf(gesamtPreis)+",00 EUR");		
+		contentStream.endText();
 	}
 	
 	 void addlastText(PDPageContentStream contentStream) throws IOException {

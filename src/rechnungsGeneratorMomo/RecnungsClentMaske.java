@@ -14,11 +14,13 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Window;
 import javax.swing.UIManager;
+import java.awt.Font;
 
 public class RecnungsClentMaske {
 
@@ -32,6 +34,8 @@ public class RecnungsClentMaske {
 	private JTextField beschreibung;
 	private JTextField beschreibung1;
 	private JTextField beschreibung2;
+	private ArrayList<Angebotspositionen>posList;
+	
 
 	/**
 	 * Launch the application.
@@ -60,7 +64,7 @@ public class RecnungsClentMaske {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-
+		posList=new ArrayList<>();
 		frame = new JFrame();
 		frame.getContentPane().setBackground(UIManager.getColor("activeCaption"));
 		frame.setBackground(Color.GRAY);
@@ -169,6 +173,7 @@ public class RecnungsClentMaske {
 
 				}
 				Kunde kunde = new Kunde();
+				
 				kunde.setAnrede(anredeCombo.getSelectedItem().toString());
 				kunde.setVorname(nameText.getText());
 				kunde.setNachName(nachnameText.getText());
@@ -176,7 +181,7 @@ public class RecnungsClentMaske {
 				kunde.setStrasse(strasseText.getText());
 				kunde.setOrt(ortText.getText());
 				kunde.setPlz(plzText.getText());
-				kunde.setBetrag(betragText.getText());
+				
 
 				try {
 					kunde.setRechnungsNummer("RE-" + String.valueOf(createRechnungsnummer()));
@@ -184,13 +189,10 @@ public class RecnungsClentMaske {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				kunde.setLeistungsBeschreibung(beschreibung.getText());
-				kunde.setLeistungsBeschreibung1(beschreibung1.getText());
-				kunde.setLeistungsBeschreibung2(beschreibung2.getText());
-
+				
 				PdfCreator pdf = new PdfCreator();
 				try {
-					pdf.createPdf(kunde);
+					pdf.createPdf(kunde,posList);
 					kunde = null;
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
@@ -199,7 +201,7 @@ public class RecnungsClentMaske {
 
 			}
 		});
-		rechnungErstellenButton.setBounds(269, 498, 94, 25);
+		rechnungErstellenButton.setBounds(327, 499, 94, 25);
 		frame.getContentPane().add(rechnungErstellenButton);
 
 		JButton clearBtn = new JButton("Clear");
@@ -214,10 +216,56 @@ public class RecnungsClentMaske {
 				beschreibung2.setText("");
 				beschreibung1.setText("");
 				beschreibung.setText("");
+				posList.clear();
 			}
 		});
-		clearBtn.setBounds(384, 498, 86, 25);
+		clearBtn.setBounds(442, 499, 86, 25);
 		frame.getContentPane().add(clearBtn);
+		
+		JButton addNewPosButton = new JButton("+");
+		addNewPosButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				beschreibung.setText("");
+				beschreibung1.setText("");
+				beschreibung2.setText("");
+				betragText.setText("");
+				
+			}
+		});
+		addNewPosButton.setFont(new Font("Tahoma", Font.BOLD, 12));
+		addNewPosButton.setBounds(719, 10, 45, 21);
+		frame.getContentPane().add(addNewPosButton);
+		
+		JButton uebernehmenButton = new JButton("\u00DCbernehmen");
+		uebernehmenButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ArrayList<String>templist=new ArrayList<String>();
+				Angebotspositionen pos=new Angebotspositionen();
+			
+				templist.add(beschreibung.getText());
+				templist.add(beschreibung1.getText());
+				templist.add(beschreibung2.getText());
+				pos.setBeschreibungen(templist);
+				pos.setLeistungsBeschreibung(beschreibung.getText());
+				pos.setLeistungsBeschreibung1(beschreibung1.getText());
+				pos.setLeistungsBeschreibung2(beschreibung2.getText());
+				pos.setBetrag(betragText.getText());
+				if(!pos.getLeistungsBeschreibung().isBlank()&& !pos.getBetrag().isBlank()) {
+					posList.add(pos);
+				}
+				else {
+					JDialog dialog = new JDialog();
+					dialog.setTitle("Hinweis");
+					dialog.getContentPane().add(new JLabel("Bitte mindesten seine Beschreibung und Betrag befüllen"));
+					dialog.setSize(200, 150);
+					dialog.setLocation(300, 300);
+					dialog.setModal(true);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		uebernehmenButton.setBounds(194, 499, 110, 25);
+		frame.getContentPane().add(uebernehmenButton);
 	}
 
 	public int createRechnungsnummer() throws IOException {

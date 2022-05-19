@@ -15,6 +15,7 @@ public class Kunde {
 	private String betrag;
 	private String anrede;
 	
+	
 
 	public String getLeistungsBeschreibung1() {
 		return leistungsBeschreibung1;
