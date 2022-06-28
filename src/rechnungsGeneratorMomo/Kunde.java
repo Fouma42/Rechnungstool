@@ -14,6 +14,7 @@ public class Kunde {
 	private String rechnungsNummer;
 	private String betrag;
 	private String anrede;
+	private String firma;
 	
 	
 
@@ -97,6 +98,12 @@ public class Kunde {
 	}
 	public void setBetrag(String betrag) {
 		this.betrag = betrag;
+	}
+	public String getFirma() {
+		return firma;
+	}
+	public void setFirma(String firma) {
+		this.firma = firma;
 	}
 
 }

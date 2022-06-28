@@ -12,8 +12,8 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 public class PdfCreator {
 
-	public  void createPdf(Kunde kunde, ArrayList<Angebotspositionen>positionen) throws IOException {
-		
+	public  String createPdf(Kunde kunde, ArrayList<Angebotspositionen>positionen) throws IOException {
+		String path=PdfHelper.path +kunde.getVorname()+"_"+kunde.getNachName()+"_"+ PdfHelper.getCurrentDate()+".pdf";
 		PDDocument document = new PDDocument();
 		PDPage page1 = new PDPage(PDRectangle.A4);
 		document.addPage(page1);
@@ -31,8 +31,9 @@ public class PdfCreator {
 		addlastText(cos);
 		footer(cos);
 		cos.close();
-		document.save(PdfHelper.path +kunde.getVorname()+"_"+kunde.getNachName()+"_"+ PdfHelper.getCurrentDate()+".pdf");
+		document.save(path);
 		document.close();
+		return path;
 	}
 
 	public  void createadress(PDPageContentStream cos, Kunde kunde) throws IOException {
@@ -76,7 +77,11 @@ public class PdfCreator {
 		cos.beginText();
 		cos.setFont(PdfHelper.FONT_DEFAULT, 12);
 		cos.newLineAtOffset(PdfHelper.RAND_LINKS_ADRESSZEILE, PdfHelper.OBEN_BEGIN_EMPFAENGER_ADRESSZEILE -(1* PdfHelper.DEFAULT_TEXT_COLUMN));
-		cos.showText(kunde.getVorname()+ " "+ kunde.getNachName());
+		if(kunde.getFirma()==null) {
+			cos.showText(kunde.getVorname()+ " "+ kunde.getNachName());
+		}else {
+			cos.showText(kunde.getFirma());
+		}
 		cos.endText();
 		
 		cos.beginText();
@@ -250,8 +255,12 @@ public class PdfCreator {
 			contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, PdfHelper.OBEN_BEGIN_LETTER_TEXT);
 			if(anrede.equals("Herr")) {
 				contentStream.showText("Sehr geehrter Herr "+ kunde.getNachName()+ ",");
-			}else {
+			}
+			if(anrede.equals("Frau")){
 				contentStream.showText("Sehr geehrte Frau "+ kunde.getNachName()+ ",");
+			}
+			if(anrede.equals("Damen und Herren")) {
+				contentStream.showText("Sehr geehrte Damen und Herren,");
 			}
 			contentStream.endText();
 

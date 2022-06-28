@@ -1,26 +1,28 @@
 package rechnungsGeneratorMomo;
 
+import java.awt.Color;
+import java.awt.Desktop;
+import java.awt.Dimension;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.DefaultComboBoxModel;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Window;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.UIManager;
-import java.awt.Font;
 
 public class RecnungsClentMaske {
 
@@ -34,7 +36,10 @@ public class RecnungsClentMaske {
 	private JTextField beschreibung;
 	private JTextField beschreibung1;
 	private JTextField beschreibung2;
-	private ArrayList<Angebotspositionen>posList;
+	private ArrayList<Angebotspositionen> posList;
+	private JTextField firmaTextfield;
+	private JPanel donePanel;
+	
 	
 
 	/**
@@ -64,7 +69,7 @@ public class RecnungsClentMaske {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		posList=new ArrayList<>();
+		posList = new ArrayList<>();
 		frame = new JFrame();
 		frame.getContentPane().setBackground(UIManager.getColor("activeCaption"));
 		frame.setBackground(Color.GRAY);
@@ -73,19 +78,19 @@ public class RecnungsClentMaske {
 		frame.setBounds(100, 100, 784, 582);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		frame.setLocationRelativeTo(null); 
+		frame.setLocationRelativeTo(null);
 
 		JLabel lblNewLabel = new JLabel("Name");
-		lblNewLabel.setBounds(215, 54, 73, 25);
+		lblNewLabel.setBounds(399, 52, 73, 25);
 		frame.getContentPane().add(lblNewLabel);
 
 		JLabel lblNewLabel_1 = new JLabel("Nachname");
-		lblNewLabel_1.setBounds(421, 60, 80, 13);
+		lblNewLabel_1.setBounds(583, 58, 80, 13);
 		frame.getContentPane().add(lblNewLabel_1);
 
 		final JComboBox<String> anredeCombo = new JComboBox<String>();
-		anredeCombo.setModel(new DefaultComboBoxModel<String>(new String[] { "Herr", "Frau" }));
-		anredeCombo.setBounds(28, 77, 122, 32);
+		anredeCombo.setModel(new DefaultComboBoxModel(new String[] { "Herr", "Frau", "Damen und Herren" }));
+		anredeCombo.setBounds(28, 77, 158, 32);
 		frame.getContentPane().add(anredeCombo);
 
 		JLabel lblNewLabel_2 = new JLabel("Anrede");
@@ -93,12 +98,12 @@ public class RecnungsClentMaske {
 		frame.getContentPane().add(lblNewLabel_2);
 
 		nameText = new JTextField();
-		nameText.setBounds(212, 78, 158, 32);
+		nameText.setBounds(396, 76, 158, 32);
 		frame.getContentPane().add(nameText);
 		nameText.setColumns(10);
 
 		nachnameText = new JTextField();
-		nachnameText.setBounds(419, 78, 158, 32);
+		nachnameText.setBounds(581, 76, 158, 32);
 		frame.getContentPane().add(nachnameText);
 		nachnameText.setColumns(10);
 
@@ -111,7 +116,7 @@ public class RecnungsClentMaske {
 		frame.getContentPane().add(lblNewLabel_4);
 
 		JLabel lblNewLabel_5 = new JLabel("Ort");
-		lblNewLabel_5.setBounds(425, 169, 45, 13);
+		lblNewLabel_5.setBounds(400, 168, 45, 13);
 		frame.getContentPane().add(lblNewLabel_5);
 
 		strasseText = new JTextField();
@@ -125,16 +130,16 @@ public class RecnungsClentMaske {
 		plzText.setColumns(10);
 
 		ortText = new JTextField();
-		ortText.setBounds(421, 195, 158, 34);
+		ortText.setBounds(396, 194, 158, 34);
 		frame.getContentPane().add(ortText);
 		ortText.setColumns(10);
 
 		JLabel lblNewLabel_6 = new JLabel("Betrag");
-		lblNewLabel_6.setBounds(611, 169, 45, 13);
+		lblNewLabel_6.setBounds(586, 168, 45, 13);
 		frame.getContentPane().add(lblNewLabel_6);
 
 		betragText = new JTextField();
-		betragText.setBounds(609, 196, 155, 32);
+		betragText.setBounds(583, 196, 155, 32);
 		frame.getContentPane().add(betragText);
 		betragText.setColumns(10);
 
@@ -173,7 +178,7 @@ public class RecnungsClentMaske {
 
 				}
 				Kunde kunde = new Kunde();
-				
+
 				kunde.setAnrede(anredeCombo.getSelectedItem().toString());
 				kunde.setVorname(nameText.getText());
 				kunde.setNachName(nachnameText.getText());
@@ -181,7 +186,9 @@ public class RecnungsClentMaske {
 				kunde.setStrasse(strasseText.getText());
 				kunde.setOrt(ortText.getText());
 				kunde.setPlz(plzText.getText());
-				
+				if (!firmaTextfield.getText().isBlank()) {
+					kunde.setFirma(firmaTextfield.getText());
+				}
 
 				try {
 					kunde.setRechnungsNummer("RE-" + String.valueOf(createRechnungsnummer()));
@@ -189,11 +196,14 @@ public class RecnungsClentMaske {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
-				
+
 				PdfCreator pdf = new PdfCreator();
 				try {
-					pdf.createPdf(kunde,posList);
+					String path=pdf.createPdf(kunde, posList);
 					kunde = null;
+					dialogFrame(path);					
+					clearAllFields();
+					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -207,21 +217,14 @@ public class RecnungsClentMaske {
 		JButton clearBtn = new JButton("Clear");
 		clearBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				nameText.setText("");
-				nachnameText.setText("");
-				strasseText.setText("");
-				ortText.setText("");
-				plzText.setText("");
-				betragText.setText("");
-				beschreibung2.setText("");
-				beschreibung1.setText("");
-				beschreibung.setText("");
-				posList.clear();
+				clearAllFields();
 			}
+
+			
 		});
 		clearBtn.setBounds(442, 499, 86, 25);
 		frame.getContentPane().add(clearBtn);
-		
+
 		JButton addNewPosButton = new JButton("+");
 		addNewPosButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -229,19 +232,19 @@ public class RecnungsClentMaske {
 				beschreibung1.setText("");
 				beschreibung2.setText("");
 				betragText.setText("");
-				
+
 			}
 		});
 		addNewPosButton.setFont(new Font("Tahoma", Font.BOLD, 12));
 		addNewPosButton.setBounds(719, 10, 45, 21);
 		frame.getContentPane().add(addNewPosButton);
-		
+
 		JButton uebernehmenButton = new JButton("\u00DCbernehmen");
 		uebernehmenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<String>templist=new ArrayList<String>();
-				Angebotspositionen pos=new Angebotspositionen();
-			
+				ArrayList<String> templist = new ArrayList<String>();
+				Angebotspositionen pos = new Angebotspositionen();
+
 				templist.add(beschreibung.getText());
 				templist.add(beschreibung1.getText());
 				templist.add(beschreibung2.getText());
@@ -250,10 +253,9 @@ public class RecnungsClentMaske {
 				pos.setLeistungsBeschreibung1(beschreibung1.getText());
 				pos.setLeistungsBeschreibung2(beschreibung2.getText());
 				pos.setBetrag(betragText.getText());
-				if(!pos.getLeistungsBeschreibung().isBlank()&& !pos.getBetrag().isBlank()) {
+				if (!pos.getLeistungsBeschreibung().isBlank() && !pos.getBetrag().isBlank()) {
 					posList.add(pos);
-				}
-				else {
+				} else {
 					JDialog dialog = new JDialog();
 					dialog.setTitle("Hinweis");
 					dialog.getContentPane().add(new JLabel("Bitte mindesten seine Beschreibung und Betrag befüllen"));
@@ -264,8 +266,98 @@ public class RecnungsClentMaske {
 				}
 			}
 		});
+		
 		uebernehmenButton.setBounds(194, 499, 110, 25);
 		frame.getContentPane().add(uebernehmenButton);
+
+		JLabel lblNewLabel_8 = new JLabel("Firma");
+		lblNewLabel_8.setBounds(212, 59, 45, 13);
+		frame.getContentPane().add(lblNewLabel_8);
+
+		firmaTextfield = new JTextField();
+		firmaTextfield.setBounds(208, 77, 162, 32);
+		frame.getContentPane().add(firmaTextfield);
+		firmaTextfield.setColumns(10);
+	}
+	
+	public void dialogFrame(String path) {
+		JDialog dialog = new JDialog();
+		JPanel panel = new JPanel();
+		JLabel label = new JLabel("PDF wurde erzeugt wollen Sie die PDF anzeigen?");
+		dialog.setTitle("Done");
+		panel.add(label);
+		dialog.setSize(320, 100);
+		dialog.setLocation(frame.getLocation().x+240, frame.getLocation().y+240);
+		dialog.setModal(true);
+		JButton jaButton=new JButton("Ja");
+		jaButton.setSize(100, 100);
+		jaButton.setVisible(true);
+		jaButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				 File file = new File(path);
+			        
+			        //first check if Desktop is supported by Platform or not
+			        if(!Desktop.isDesktopSupported()){
+			            System.out.println("Desktop is not supported");
+			            return;
+			        }
+			        
+			        Desktop desktop = Desktop.getDesktop();
+			        if(file.exists())
+						try {
+							desktop.open(file);
+						} catch (IOException e2) {
+							// TODO Auto-generated catch block
+							e2.printStackTrace();
+						}
+			        
+			        //let's try to open PDF file
+			        file = new File(path);
+			        if(file.exists())
+						try {
+							desktop.open(file);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+			        dialog.setVisible(false);
+					dialog.dispose();
+			    } 
+				
+			
+		});
+		panel.add(jaButton);
+		JButton neinButton=new JButton("Nein");
+		neinButton.setSize(100, 100);
+		neinButton.setVisible(true);
+		neinButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
+				dialog.dispose();				
+			}
+		});
+		panel.add(neinButton);
+		dialog.add(panel);
+		dialog.setVisible(true);
+		
+	}
+	public void clearAllFields() {
+		nameText.setText("");
+		nachnameText.setText("");
+		strasseText.setText("");
+		ortText.setText("");
+		plzText.setText("");
+		betragText.setText("");
+		beschreibung2.setText("");
+		beschreibung1.setText("");
+		beschreibung.setText("");
+		firmaTextfield.setText("");
+		posList.clear();
 	}
 
 	public int createRechnungsnummer() throws IOException {
