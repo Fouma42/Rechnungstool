@@ -127,12 +127,6 @@ public class PdfCreator {
 		contentStream.showText("Leistung");
 		contentStream.endText();
 
-//		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-//		contentStream.beginText();
-//		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, PdfHelper.RECT_START_Y_TEXT);
-//		contentStream.showText("Pos.");
-//		contentStream.endText();
-
 		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 		contentStream.beginText();
 		contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_EINZELPREIS,
@@ -156,12 +150,6 @@ public class PdfCreator {
 		for (Angebotspositionen i : positionen) {
 			posNr++;
 			gesamtPreis=gesamtPreis +Integer.valueOf(i.getBetrag());
-//			contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-//			contentStream.beginText();
-//			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_MENGE, pixelPosition_Y);
-//			contentStream.showText(String.valueOf(posNr));
-//			contentStream.endText();
-
 			contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 			contentStream.beginText();
 			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_EINZELPREIS, pixelPosition_Y);
@@ -172,40 +160,28 @@ public class PdfCreator {
 			contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_GESAMTPREIS, pixelPosition_Y);
 			contentStream.showText(String.valueOf(i.getBetrag()) + ",00 EUR");
 			contentStream.endText();
-			
-					for (String beschreibung : i.getBeschreibungen()) {
-						
-					if(!beschreibung.isBlank()) {
+					if(!i.getLeistungsBeschreibung().isBlank()) {
 						contentStream.beginText();
 						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
-						contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
+						contentStream.showText(i.getLeistungsBeschreibung().replace("\n", "").replace("\r", ""));
 						contentStream.endText();
 					}
-//						contentStream.beginText();
-//						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
-//						contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
-//						contentStream.endText();					
-//				
-//						
-//					
-//							contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-//							contentStream.beginText();
-//							contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 20);
-//							contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
-//							contentStream.endText();
-//						
-//						
-//					
-//							contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
-//							contentStream.beginText();
-//							contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y - 40);
-//							contentStream.showText(beschreibung.replace("\n", "").replace("\r", ""));
-//							contentStream.endText();
-						pixelPosition_Y-=15;
-						
+					pixelPosition_Y-=15;
+					if(!i.getLeistungsBeschreibung().isBlank()) {
+						contentStream.beginText();
+						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
+						contentStream.showText(i.getLeistungsBeschreibung1().replace("\n", "").replace("\r", ""));
+						contentStream.endText();
 					}
+					pixelPosition_Y-=15;
+					if(!i.getLeistungsBeschreibung2().isBlank()) {
+						contentStream.beginText();
+						contentStream.newLineAtOffset(PdfHelper.RECT_START_X_TEXT_POS, pixelPosition_Y);
+						contentStream.showText(i.getLeistungsBeschreibung2().replace("\n", "").replace("\r", ""));
+						contentStream.endText();
+					}				
 					
-			pixelPosition_Y -=10;
+			pixelPosition_Y -=20;
 		}
 		
 		contentStream.setFont(PdfHelper.FONT_DEFAULT_BOLD, PdfHelper.FONT_SIZE_DEFAULT);
