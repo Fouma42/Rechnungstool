@@ -36,9 +36,8 @@ public class RecnungsClentMaske {
 	private JTextField beschreibung;
 	private JTextField beschreibung1;
 	private JTextField beschreibung2;
-	private ArrayList<Angebotspositionen> posList;
 	private JTextField firmaTextfield;
-	private JPanel donePanel;
+	ArrayList<Angebotspositionen> pos;
 	
 	
 
@@ -69,7 +68,7 @@ public class RecnungsClentMaske {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		posList = new ArrayList<>();
+		pos= new ArrayList<Angebotspositionen>();
 		frame = new JFrame();
 		frame.getContentPane().setBackground(UIManager.getColor("activeCaption"));
 		frame.setBackground(Color.GRAY);
@@ -193,19 +192,17 @@ public class RecnungsClentMaske {
 				try {
 					kunde.setRechnungsNummer("RE-" + String.valueOf(createRechnungsnummer()));
 				} catch (IOException e2) {
-					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
 
 				PdfCreator pdf = new PdfCreator();
 				try {
-					String path=pdf.createPdf(kunde, posList);
+					String path=pdf.createPdf(kunde, pos);
 					kunde = null;
 					dialogFrame(path);					
-					clearAllFields();
+					clearAllFields(true);
 					
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 
@@ -217,7 +214,7 @@ public class RecnungsClentMaske {
 		JButton clearBtn = new JButton("Clear");
 		clearBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clearAllFields();
+				clearAllFields(true);
 			}
 
 			
@@ -232,7 +229,6 @@ public class RecnungsClentMaske {
 				beschreibung1.setText("");
 				beschreibung2.setText("");
 				betragText.setText("");
-
 			}
 		});
 		addNewPosButton.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -242,19 +238,9 @@ public class RecnungsClentMaske {
 		JButton uebernehmenButton = new JButton("\u00DCbernehmen");
 		uebernehmenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<String> templist = new ArrayList<String>();
-				Angebotspositionen pos = new Angebotspositionen();
-
-				templist.add(beschreibung.getText());
-				templist.add(beschreibung1.getText());
-				templist.add(beschreibung2.getText());
-				pos.setBeschreibungen(templist);
-				pos.setLeistungsBeschreibung(beschreibung.getText());
-				pos.setLeistungsBeschreibung1(beschreibung1.getText());
-				pos.setLeistungsBeschreibung2(beschreibung2.getText());
-				pos.setBetrag(betragText.getText());
-				if (!pos.getLeistungsBeschreibung().isBlank() && !pos.getBetrag().isBlank()) {
-					posList.add(pos);
+				
+				if (!beschreibung.getText().isBlank() && !betragText.getText().isBlank()) {
+					pos.add(new Angebotspositionen(beschreibung.getText(),  beschreibung1.getText().isBlank()?"": beschreibung1.getText(), beschreibung2.getText().isBlank()?"": beschreibung2.getText(), Integer.valueOf(betragText.getText())));
 				} else {
 					JDialog dialog = new JDialog();
 					dialog.setTitle("Hinweis");
@@ -346,7 +332,7 @@ public class RecnungsClentMaske {
 		dialog.setVisible(true);
 		
 	}
-	public void clearAllFields() {
+	public void clearAllFields(boolean clearList) {
 		nameText.setText("");
 		nachnameText.setText("");
 		strasseText.setText("");
@@ -357,7 +343,9 @@ public class RecnungsClentMaske {
 		beschreibung1.setText("");
 		beschreibung.setText("");
 		firmaTextfield.setText("");
-		posList.clear();
+		if(clearList) {
+			pos.clear();
+		}
 	}
 
 	public int createRechnungsnummer() throws IOException {
