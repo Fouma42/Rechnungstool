@@ -206,16 +206,26 @@ public class PdfCreator {
 		contentStream.showText("Zahlbar innerhalb 14 Tagen nach Erhalt der Rechnung.");
 		contentStream.endText();	
 
-		
+		contentStream.setFont(PdfHelper.FONT_DEFAULT, 8);
+		contentStream.beginText();
+		contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, startEndText-20);
+		contentStream.showText("Diese Rechnung enthält aufgrund §19 UstG. keine Umsatzsteuer.");
+		contentStream.endText();
+		 
 		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 		contentStream.beginText();
 		contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, startEndText-50);
+		contentStream.showText("Vielen Dank für Ihren Auftrag.");
+		contentStream.endText();	
+		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
+		contentStream.beginText();
+		contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, startEndText-70);
 		contentStream.showText("Mit freundlichen Grüßen");
 		contentStream.endText();	
 		
 		contentStream.setFont(PdfHelper.FONT_DEFAULT, PdfHelper.FONT_SIZE_DEFAULT);
 		contentStream.beginText();
-		contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, startEndText-100);
+		contentStream.newLineAtOffset(PdfHelper.RAND_LINKS_DEFAULT, startEndText-120);
 		contentStream.showText("Muammer Dalkilic");
 		contentStream.endText();
 		
