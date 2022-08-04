@@ -13,7 +13,7 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 public class PdfCreator {
 
 	public  String createPdf(Kunde kunde, ArrayList<Angebotspositionen>positionen) throws IOException {
-		String path=PdfHelper.path +kunde.getVorname()+"_"+kunde.getNachName()+"_"+ PdfHelper.getCurrentDate()+".pdf";
+		String path=PdfHelper.path +kunde.getVorname()+"_"+kunde.getNachName()+"_"+ PdfHelper.getCurrentDate()+"_"+kunde.getRechnungsNummer()+".pdf";
 		PDDocument document = new PDDocument();
 		PDPage page1 = new PDPage(PDRectangle.A4);
 		document.addPage(page1);
