@@ -264,6 +264,10 @@ public class RecnungsClentMaske {
 		firmaTextfield.setBounds(208, 77, 162, 32);
 		frame.getContentPane().add(firmaTextfield);
 		firmaTextfield.setColumns(10);
+		
+		JButton btnNewButton = new JButton("Email versenden");
+		btnNewButton.setBounds(28, 11, 110, 21);
+		frame.getContentPane().add(btnNewButton);
 	}
 	
 	public void dialogFrame(String path) {
@@ -328,7 +332,7 @@ public class RecnungsClentMaske {
 			}
 		});
 		panel.add(neinButton);
-		dialog.add(panel);
+		dialog.getContentPane().add(panel);
 		dialog.setVisible(true);
 		
 	}
