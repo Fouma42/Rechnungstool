@@ -18,6 +18,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,8 +39,7 @@ public class RecnungsClentMaske {
 	private JTextField beschreibung2;
 	private JTextField firmaTextfield;
 	ArrayList<Angebotspositionen> pos;
-	
-	
+	private Kunde kundeForMail;
 
 	/**
 	 * Launch the application.
@@ -68,7 +68,8 @@ public class RecnungsClentMaske {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		pos= new ArrayList<Angebotspositionen>();
+		pos = new ArrayList<Angebotspositionen>();
+		kundeForMail = new Kunde();
 		frame = new JFrame();
 		frame.getContentPane().setBackground(UIManager.getColor("activeCaption"));
 		frame.setBackground(Color.GRAY);
@@ -181,12 +182,14 @@ public class RecnungsClentMaske {
 				kunde.setAnrede(anredeCombo.getSelectedItem().toString());
 				kunde.setVorname(nameText.getText());
 				kunde.setNachName(nachnameText.getText());
-
+				kundeForMail.setAnrede(anredeCombo.getSelectedItem().toString());
+				kundeForMail.setNachName(nachnameText.getText());
 				kunde.setStrasse(strasseText.getText());
 				kunde.setOrt(ortText.getText());
 				kunde.setPlz(plzText.getText());
 				if (!firmaTextfield.getText().isBlank()) {
 					kunde.setFirma(firmaTextfield.getText());
+					kundeForMail.setFirma(firmaTextfield.getText());
 				}
 
 				try {
@@ -197,11 +200,11 @@ public class RecnungsClentMaske {
 
 				PdfCreator pdf = new PdfCreator();
 				try {
-					String path=pdf.createPdf(kunde, pos);
+					String path = pdf.createPdf(kunde, pos);
 					kunde = null;
-					dialogFrame(path);					
+					dialogFrame(path);
 					clearAllFields(true);
-					
+
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -217,7 +220,6 @@ public class RecnungsClentMaske {
 				clearAllFields(true);
 			}
 
-			
 		});
 		clearBtn.setBounds(442, 499, 86, 25);
 		frame.getContentPane().add(clearBtn);
@@ -238,9 +240,12 @@ public class RecnungsClentMaske {
 		JButton uebernehmenButton = new JButton("\u00DCbernehmen");
 		uebernehmenButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if (!beschreibung.getText().isBlank() && !betragText.getText().isBlank()) {
-					pos.add(new Angebotspositionen(beschreibung.getText(),  beschreibung1.getText().isBlank()?"": beschreibung1.getText(), beschreibung2.getText().isBlank()?"": beschreibung2.getText(), Integer.valueOf(betragText.getText())));
+					pos.add(new Angebotspositionen(beschreibung.getText(),
+							beschreibung1.getText().isBlank() ? "" : beschreibung1.getText(),
+							beschreibung2.getText().isBlank() ? "" : beschreibung2.getText(),
+							Integer.valueOf(betragText.getText())));
 				} else {
 					JDialog dialog = new JDialog();
 					dialog.setTitle("Hinweis");
@@ -252,7 +257,7 @@ public class RecnungsClentMaske {
 				}
 			}
 		});
-		
+
 		uebernehmenButton.setBounds(194, 499, 110, 25);
 		frame.getContentPane().add(uebernehmenButton);
 
@@ -264,12 +269,25 @@ public class RecnungsClentMaske {
 		firmaTextfield.setBounds(208, 77, 162, 32);
 		frame.getContentPane().add(firmaTextfield);
 		firmaTextfield.setColumns(10);
-		
-		JButton btnNewButton = new JButton("Email versenden");
-		btnNewButton.setBounds(28, 11, 110, 21);
-		frame.getContentPane().add(btnNewButton);
+
+		JButton btnEmailVersand = new JButton("Email versenden");
+		btnEmailVersand.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser chooser = new JFileChooser("C:\\Rechnungen");
+				chooser.showOpenDialog(null);
+				String pdfPath = chooser.getSelectedFile().getPath();
+				if (!pdfPath.isBlank()) {
+					// öffne neuen Dialog mit Feldern zu Empfänger mail und betreff etc.
+					// versende die Mail
+				} else {
+					// öffne einen Dialog, dass keine Datei ausgewählt wurde.
+				}
+			}
+		});
+		btnEmailVersand.setBounds(28, 11, 110, 21);
+		frame.getContentPane().add(btnEmailVersand);
 	}
-	
+
 	public void dialogFrame(String path) {
 		JDialog dialog = new JDialog();
 		JPanel panel = new JPanel();
@@ -277,65 +295,65 @@ public class RecnungsClentMaske {
 		dialog.setTitle("Done");
 		panel.add(label);
 		dialog.setSize(320, 100);
-		dialog.setLocation(frame.getLocation().x+240, frame.getLocation().y+240);
+		dialog.setLocation(frame.getLocation().x + 240, frame.getLocation().y + 240);
 		dialog.setModal(true);
-		JButton jaButton=new JButton("Ja");
+		JButton jaButton = new JButton("Ja");
 		jaButton.setSize(100, 100);
 		jaButton.setVisible(true);
 		jaButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				 File file = new File(path);
-			        
-			        //first check if Desktop is supported by Platform or not
-			        if(!Desktop.isDesktopSupported()){
-			            System.out.println("Desktop is not supported");
-			            return;
-			        }
-			        
-			        Desktop desktop = Desktop.getDesktop();
-			        if(file.exists())
-						try {
-							desktop.open(file);
-						} catch (IOException e2) {
-							// TODO Auto-generated catch block
-							e2.printStackTrace();
-						}
-			        
-			        //let's try to open PDF file
-			        file = new File(path);
-			        if(file.exists())
-						try {
-							desktop.open(file);
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-			        dialog.setVisible(false);
-					dialog.dispose();
-			    } 
-				
-			
+
+				File file = new File(path);
+
+				// first check if Desktop is supported by Platform or not
+				if (!Desktop.isDesktopSupported()) {
+					System.out.println("Desktop is not supported");
+					return;
+				}
+
+				Desktop desktop = Desktop.getDesktop();
+				if (file.exists())
+					try {
+						desktop.open(file);
+					} catch (IOException e2) {
+						// TODO Auto-generated catch block
+						e2.printStackTrace();
+					}
+
+				// let's try to open PDF file
+				file = new File(path);
+				if (file.exists())
+					try {
+						desktop.open(file);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				dialog.setVisible(false);
+				dialog.dispose();
+			}
+
 		});
 		panel.add(jaButton);
-		JButton neinButton=new JButton("Nein");
+		JButton neinButton = new JButton("Nein");
 		neinButton.setSize(100, 100);
 		neinButton.setVisible(true);
 		neinButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dialog.setVisible(false);
-				dialog.dispose();				
+				dialog.dispose();
 			}
 		});
 		panel.add(neinButton);
 		dialog.getContentPane().add(panel);
 		dialog.setVisible(true);
-		
+
 	}
+
 	public void clearAllFields(boolean clearList) {
 		nameText.setText("");
 		nachnameText.setText("");
@@ -347,7 +365,7 @@ public class RecnungsClentMaske {
 		beschreibung1.setText("");
 		beschreibung.setText("");
 		firmaTextfield.setText("");
-		if(clearList) {
+		if (clearList) {
 			pos.clear();
 		}
 	}

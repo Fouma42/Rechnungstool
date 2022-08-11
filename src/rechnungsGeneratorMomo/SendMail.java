@@ -1,39 +1,35 @@
 package rechnungsGeneratorMomo;
-import javax.mail.*;
-import javax.mail.internet.*;
-
 import java.util.Date;
 import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 public class SendMail {
 
-		public static void main (String [] args) throws MessagingException {
-			final String fromEmail = "fouma2003@msn.com"; //requires valid gmail id
-			final String password = "Fouma1322251509"; // correct password for gmail id
-			final String toEmail = "h.dalkilic@outlook.de"; // can be any email id 
-			
-			System.out.println("TLSEmail Start");
-			Properties props = new Properties();
-			props.put("mail.smtp.host", "smtp-mail.outlook.com"); //SMTP Host
-			props.put("mail.smtp.port", "587"); //TLS Port
-			props.put("mail.smtp.auth", "true"); //enable authentication
-			props.put("mail.smtp.ssl.protocols", "TLSv1.2");
-			props.put("mail.smtp.starttls.enable", "true"); //enable STARTTLS
+	   
+	   public void sendEmail(String toEmail, String subject, String body){
+		   Properties props = new Properties();
+		   MailCredentials mailSettings= new MailCredentials();
+			props.put("mail.smtp.host",mailSettings.getSMTP_HOST()); //SMTP Host
+			props.put("mail.smtp.port", mailSettings.getTLS_PORT()); //TLS Port
+			props.put("mail.smtp.auth",mailSettings.getAUTHENTICATION()); //enable authentication
+			props.put("mail.smtp.ssl.protocols", mailSettings.getPROTOCOL());
+			props.put("mail.smtp.starttls.enable",mailSettings.getSTART_TLS_ENABLE()); //enable STARTTLS
 			
 	                //create Authenticator object to pass in Session.getInstance argument
 			Authenticator auth = new Authenticator() {
 				//override the getPasswordAuthentication method
 				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(fromEmail, password);
+					return new PasswordAuthentication(mailSettings.getFROM_MAIL(), mailSettings.getPASSWORD());
 				}
 			};
 			Session session = Session.getInstance(props, auth);
-			
-			sendEmail(session,fromEmail,password,toEmail,"TLSEmail Testing Subject", "TLSEmail Testing Body");
-			
-		}
-
-	   
-	   public static void sendEmail(Session session,String from, String pwd, String toEmail, String subject, String body){
 			try
 		    {
  		      MimeMessage msg = new MimeMessage(session);
@@ -42,7 +38,7 @@ public class SendMail {
 		      msg.addHeader("format", "flowed");
 		      msg.addHeader("Content-Transfer-Encoding", "8bit");
 
-		      msg.setFrom(new InternetAddress(from, "MOMO´Fensterputz"));
+		      msg.setFrom(new InternetAddress(mailSettings.getFROM_MAIL(), "MOMO´Fensterputz"));
 
 		    // msg.setReplyTo(InternetAddress.parse(toEmail, false));
 
