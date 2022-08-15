@@ -274,13 +274,19 @@ public class RecnungsClentMaske {
 		btnEmailVersand.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser("C:\\Rechnungen");
-				chooser.showOpenDialog(null);
-				String pdfPath = chooser.getSelectedFile().getPath();
-				if (!pdfPath.isBlank()) {
-					// öffne neuen Dialog mit Feldern zu Empfänger mail und betreff etc.
-					// versende die Mail
-				} else {
-					// öffne einen Dialog, dass keine Datei ausgewählt wurde.
+				int result = chooser.showOpenDialog(frame);
+				if (result != JFileChooser.CANCEL_OPTION) {
+					String pdfPath = chooser.getSelectedFile().getPath();
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								MailVersandWindow window = new MailVersandWindow(pdfPath);
+								window.getMailFrame().setVisible(true);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
 				}
 			}
 		});
