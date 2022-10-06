@@ -276,7 +276,7 @@ public class RecnungsClentMaske {
 				JFileChooser chooser = new JFileChooser("C:\\Rechnungen");
 				int result = chooser.showOpenDialog(frame);
 				if (result != JFileChooser.CANCEL_OPTION) {
-					String pdfPath = chooser.getSelectedFile().getPath();
+					File pdfPath = chooser.getSelectedFile();
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {

@@ -1,4 +1,5 @@
 package rechnungsGeneratorMomo;
+import java.io.File;
 import java.util.Date;
 import java.util.Properties;
 
@@ -20,7 +21,7 @@ import javax.mail.internet.MimeMultipart;
 public class SendMail {
 
 	   
-	   public boolean sendEmail(String toEmail, String subject, String body,String filePath){
+	   public boolean sendEmail(String toEmail, String subject, String body,File filePath){
 		   Properties props = new Properties();
 		   boolean mailSent=false;
 		   MailCredentials mailSettings= new MailCredentials();
@@ -55,21 +56,20 @@ public class SendMail {
 		      //msg.setText(body, "UTF-8");
 
 		      msg.setSentDate(new Date());
-
+		     
 		      msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail, false));
 		      BodyPart messageBodyPart = new MimeBodyPart();
 		      messageBodyPart.setText(body);
 		      Multipart multipart = new MimeMultipart();
 		      multipart.addBodyPart(messageBodyPart);
 		      // Anhang
-		      DataSource source = new FileDataSource(filePath);
+		      DataSource source = new FileDataSource(filePath.getPath());
 		      messageBodyPart = new MimeBodyPart();
 		      messageBodyPart.setDataHandler(new DataHandler(source));
-		      messageBodyPart.setFileName(filePath);
+		      messageBodyPart.setFileName( convertiereUmlaute(filePath.getName()));
 		      multipart.addBodyPart(messageBodyPart);
 		      msg.setContent(multipart);
 	    	  Transport.send(msg); 
-
 		      mailSent=true;
 		    }
 		    catch (Exception e) {
@@ -77,6 +77,27 @@ public class SendMail {
 		    }
 			return mailSent;
 		}
+	   
+	   public String convertiereUmlaute(String input) {
+		   // replace all lower Umlauts
+		     String output = input.replace("ü", "ue")
+		                          .replace("ö", "oe")
+		                          .replace("ä", "ae")
+		                          .replace("ß", "ss");
+		 
+		     // first replace all capital Umlauts in a non-capitalized context (e.g. Übung)
+		     output = output.replaceAll("Ü(?=[a-zäöüß ])", "Ue")
+		                    .replaceAll("Ö(?=[a-zäöüß ])", "Oe")
+		                    .replaceAll("Ä(?=[a-zäöüß ])", "Ae");
+		 
+		     // now replace all the other capital Umlauts
+		     output = output.replace("Ü", "UE")
+		                    .replace("Ö", "OE")
+		                    .replace("Ä", "AE");
+		     
+		     return output;
+		   
+	   }
 	}
 
 

@@ -2,6 +2,7 @@ package rechnungsGeneratorMomo;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,13 +14,13 @@ public class MailVersandWindow {
 
 	private JFrame mailFrame;
 	private JTextField mailempfaenger;
-	private String pathToPdf;
+	private File pathToPdf;
 
 
 	/**
 	 * Create the application.
 	 */
-	public MailVersandWindow(String path) {
+	public MailVersandWindow(File path) {
 		initialize(path);
 	}
 public JFrame getMailFrame() {
@@ -28,7 +29,7 @@ public JFrame getMailFrame() {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(String path) {
+	private void initialize(File path) {
 		this.pathToPdf=path;
 		mailFrame = new JFrame();
 		mailFrame.setBounds(100, 100, 411, 372);
@@ -54,16 +55,18 @@ public JFrame getMailFrame() {
 		
 		JButton sendMail_btn = new JButton("Versenden");
 		sendMail_btn.addActionListener(new ActionListener() {
+			String subject="Ihre Rechnung.";
+			
 			public void actionPerformed(ActionEvent e) {
 				SendMail sendMail=new SendMail();
-				boolean ok= sendMail.sendEmail(mailempfaenger.getText(), "Momos Fensterputz", mailText.getText(), pathToPdf);
+				boolean ok= sendMail.sendEmail(mailempfaenger.getText(), subject, mailText.getText(), pathToPdf);
 				
 				if(ok) {
 				mailFrame.dispose();
 				}
 				else {
 					DialogUtil dialogUtil=new DialogUtil();
-					dialogUtil.createDialog("Fehler", "Bitte gültige E-Mail angegeben!", mailFrame);
+					dialogUtil.createDialog("Fehler", "Ein Fehler ist aufgetreten!", mailFrame);
 				}
 			}
 		});
