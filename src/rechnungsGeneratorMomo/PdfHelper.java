@@ -16,34 +16,33 @@ public class PdfHelper {
 	static public int FONT_SIZE_DEFAULT = 12;
 	static public int FONT_SIZE_BOLD = 9;
 	static public int FONT_SIZE_BOLD_BOLD = 12;
-	
+
 	static public int DEFAULT_TEXT_COLUMN = 15;
 
 	static public final int RAND_LINKS_DEFAULT = 72;
-	
-	//Adresszzeile 
+
+	// Adresszzeile
 	static public final int RAND_LINKS_ADRESSZEILE = RAND_LINKS_DEFAULT;
 	static public final int OBEN_BEGIN_ABSENDER_ADRESSZEILE = 770;
 	static public final int OBEN_BEGIN_EMPFAENGER_ADRESSZEILE = 660;
 	static public final int OBEN_BEGIN_LETTER_TEXT = 530;
-	
-	//Orange Rectangle
+
+	// Orange Rectangle
 	static public final int RECT_START_X = RAND_LINKS_DEFAULT;
 	static public final int RECT_START_Y = 470;
 	static public final int RECT_WIDTH = 469;
 	static public final int RECT_HEIGHT = 18;
-	
+
 	static public final int RECT_START_Y_TEXT = RECT_START_Y + 6;
 	static public final int RECT_START_X_TEXT_POS = RECT_START_X + 4;
 	static public final int RECT_START_X_TEXT_BESCHREIBUNG = RECT_START_X + 48;
 	static public final int RECT_START_X_TEXT_MENGE = RECT_START_X + 285;
-	static public final int RECT_START_X_TEXT_EINZELPREIS = RECT_START_X + 340;
+	static public final int RECT_START_X_TEXT_EINZELPREIS = RECT_START_X + 320;
 	static public final int RECT_START_X_TEXT_GESAMTPREIS = RECT_START_X + 407;
-	
-	//Gray Rectangle
+
+	// Gray Rectangle
 	static public final Color LIGHT_SENTAX_GRAY = new Color(241, 241, 241);
-	
-	
+
 	// METHODS
 	static public String getCurrentDate() {
 		Date date = (Date) java.util.Calendar.getInstance().getTime();
